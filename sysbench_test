@@ -1,0 +1,134 @@
+# Test set to be run with sysbench
+
+# Edit these variables before running:
+# orin-nx, orin-agx, nuc, icicle-kit, lenovo-x1 
+DEVICE=nuc_net-vm
+BUILD_ID=252
+THREADS=1
+
+# Defaults
+ExpectedPowerModeNo=3
+FILE_TOTAL_SIZE=20
+
+# Extract ghaf-version, date, commit hash
+DATE=$(ghaf-version | cut -d . -f 3)
+
+# Create a directory for the results
+RESULT_DIR=${DATE}_${BUILD_ID}_${DEVICE}_sysbench_results
+echo -e "\nCreating directory for test results:"
+echo "./$RESULT_DIR"
+mkdir $RESULT_DIR
+
+# Copy this test script file itself into the result directory
+FileName=${0##*/}
+cp ${FileName} ./$RESULT_DIR
+
+# Create test_info file with ghaf-version and information about the run environment: lscpu, free, df
+echo -e "\nSaving information about test environment to ./$RESULT_DIR/test_info\n"
+echo -e "$(ghaf-version)" "\n" > ./$RESULT_DIR/test_info
+echo -e "$(lscpu)" "\n\n" "$(free)" "\n\n" "$(df)" "\n\n" >> ./$RESULT_DIR/test_info
+
+# Check cpu architecture and in case of aarch64 (Orin) check power model
+if lscpu | grep -w "aarch64"
+then 
+	# Power=$(nvpmodel -q | grep -oP '(?<=NV Power Mode:).*')
+	echo -e "$(nvpmodel -q)" "\n" >> ./$RESULT_DIR/test_info
+	ModeNo=$(nvpmodel -q | awk -F: 'NR==2 {print $1}')
+	if [ $ModeNo -eq $ExpectedPowerModeNo ]
+	then
+		echo "Power mode check ok: ${ModeNo}" | tee -a ./$RESULT_DIR/test_info
+		echo "Expected: ${ExpectedPowerModeNo}" | tee -a ./$RESULT_DIR/test_info
+	else
+		echo "Unexpected power mode detected: ${ModeNo}" | tee -a ./$RESULT_DIR/test_info
+		echo "Expected: ${ExpectedPowerModeNo}" | tee -a ./$RESULT_DIR/test_info
+		echo -e "\nSysbech test not executed. Adjust power mode to ${ExpectedPowerModeNo}."
+		exit 1
+	fi 
+fi
+
+
+# cpu
+sysbench cpu --time=10 --threads=1 --cpu-max-prime=20000 run | tee ./$RESULT_DIR/${DATE}_cpu_1thread_report
+# If THREADS=1 do not repeat the test for multiple threads.
+if [ $THREADS -gt 1 ]
+then
+	sysbench cpu --time=10 --threads=${THREADS} --cpu-max-prime=20000 run | tee ./$RESULT_DIR/${DATE}_cpu_report
+fi
+
+# memory
+sysbench memory --time=60 --memory-oper=read --threads=1 run | tee ./$RESULT_DIR/${DATE}_memory_rd_1thread_report
+sysbench memory --time=60 --memory-oper=write --threads=1 run | tee ./$RESULT_DIR/${DATE}_memory_wr_1thread_report
+# If THREADS=1 do not repeat the test for multiple threads.
+if [ $THREADS -gt 1 ]
+then
+	sysbench memory --time=15 --memory-oper=read --threads=${THREADS} run | tee ./$RESULT_DIR/${DATE}_memory_rd_report
+	sysbench memory --time=30 --memory-oper=write --threads=${THREADS} run | tee ./$RESULT_DIR/${DATE}_memory_wr_report
+fi
+
+
+# fileio
+# In case of running the test within some VM need to check that 
+# available memory < file-total-size < available disk space
+# If this is not possible the following tests don't produce useful data and it's better to skip them (to save time) 
+
+TOTAL_MEM_GB=$(free --giga | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
+TOTAL_MEM_GiB=$(free -h | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
+TOTAL_MEM_kB=$(free | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
+# echo $TOTAL_MEM_GiB
+
+# Calculate default variable FILE_TOTAL_SIZE (GiB) in GB
+FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
+FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
+# echo $FILE_TOTAL_SIZE_kB
+
+# Add 10% margin to FILE_TOTAL_SIZE_GB for disk space test
+FILE_TOTAL_SIZE_WITH_MARGIN_kB=$(echo | expr $FILE_TOTAL_SIZE_kB / 10 + $FILE_TOTAL_SIZE_kB)
+# echo $FILE_TOTAL_SIZE_WITH_MARGIN_kB
+
+# Read available disk space (in GB)
+AVAILABLE_DISK_SPACE_kB=$(df | grep -w "/" | awk -F: 'NR==1 {print $1}' | awk '{print $4}' | tr -d [A-Z][a-z])
+AVAILABLE_DISK_SPACE_GB=$(echo | awk -v size="$AVAILABLE_DISK_SPACE_kB" '{print size / 1024 / 1024}' | cut -d . -f 1)
+# echo $AVAILABLE_DISK_SPACE_kB
+# echo $AVAILABLE_DISK_SPACE_GB
+
+SKIP_FILEIO=0
+
+# Check if file total size for fileio test is smaller than total memory.
+if [ $FILE_TOTAL_SIZE_kB -lt $TOTAL_MEM_kB ]
+then
+	echo -e "\n${FILE_TOTAL_SIZE} GiB default variable too low. Should be greater than available memory ${TOTAL_MEM_GB} GiB." | tee -a ./$RESULT_DIR/test_info
+	echo "Sysbench fileio tests will be skipped." | tee -a ./$RESULT_DIR/test_info
+	SKIP_FILEIO="1$SKIP_FILEIO"
+fi
+
+# Check if file total size for fileio test is larger than available disk space.
+if [ $FILE_TOTAL_SIZE_WITH_MARGIN_kB -gt $AVAILABLE_DISK_SPACE_kB ]
+then
+	echo -e "\nAvailable disk space ${AVAILABLE_DISK_SPACE_kB} kB too low. Should be 20% greater than FILE_TOTAL_SIZE ${FILE_TOTAL_SIZE} GiB." | tee -a ./$RESULT_DIR/test_info
+	echo "Sysbench fileio tests will be skipped." | tee -a ./$RESULT_DIR/test_info
+	SKIP_FILEIO="1$SKIP_FILEIO"
+fi
+
+# Check if total memory is larger than available disk space.
+if [ $TOTAL_MEM_kB -gt $AVAILABLE_DISK_SPACE_kB ]
+then
+	echo -e "\nTotal memory $TOTAL_MEM_kB kB is higher than available disk space $AVAILABLE_DISK_SPACE_kB kB." | tee -a ./$RESULT_DIR/test_info
+	echo "It is not reasonable to run fileio test in this environment." | tee -a ./$RESULT_DIR/test_info
+fi
+
+# echo $SKIP_FILEIO
+
+# If one of the previous checks didn't pass exit before running fileio tests.
+if [ $SKIP_FILEIO -gt 0 ]
+then
+	echo -e "\nTest finished.\n"
+	exit 1
+fi
+
+sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqrd prepare
+sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqrd --time=30 run | tee ./$RESULT_DIR/${DATE}_fileio_rd_report
+sysbench fileio cleanup
+sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqwr --time=30 run | tee ./$RESULT_DIR/${DATE}_fileio_wr_report
+sysbench fileio cleanup
+
+echo -e "\nTest finished.\n"
