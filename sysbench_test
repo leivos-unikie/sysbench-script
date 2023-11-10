@@ -91,8 +91,8 @@ TOTAL_MEM_kB=$(free | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
 FILE_TOTAL_SIZE=$(echo | awk -v size="$TOTAL_MEM_GiB" '{print size + 4}')
 
 # Calculate FILE_TOTAL_SIZE (GiB) in GB
-# FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
-# FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
+FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
+FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
 # echo $FILE_TOTAL_SIZE_kB
 
 # Add 10% margin to FILE_TOTAL_SIZE_GB for disk space test
