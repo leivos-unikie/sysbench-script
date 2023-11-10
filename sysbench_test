@@ -2,13 +2,15 @@
 
 # Edit these variables before running:
 # orin-nx, orin-agx, nuc, icicle-kit, lenovo-x1 
-DEVICE=nuc_net-vm
-BUILD_ID=252
+DEVICE=dummy
+BUILD_ID=0
 THREADS=1
 
 # Defaults
 ExpectedPowerModeNo=3
-FILE_TOTAL_SIZE=20
+
+# This in not anymore set manually but is calculated according to total memory
+# FILE_TOTAL_SIZE=
 
 # Extract ghaf-version, date, commit hash
 DATE=$(ghaf-version | cut -d . -f 3)
@@ -85,9 +87,12 @@ TOTAL_MEM_GiB=$(free -h | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
 TOTAL_MEM_kB=$(free | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
 # echo $TOTAL_MEM_GiB
 
-# Calculate default variable FILE_TOTAL_SIZE (GiB) in GB
-FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
-FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
+# Set FILE_TOTAL_SIZE 4GiB higher than the total memory
+FILE_TOTAL_SIZE=$(echo | awk -v size="$TOTAL_MEM_GiB" '{print size + 4}')
+
+# Calculate FILE_TOTAL_SIZE (GiB) in GB
+# FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
+# FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
 # echo $FILE_TOTAL_SIZE_kB
 
 # Add 10% margin to FILE_TOTAL_SIZE_GB for disk space test
@@ -103,12 +108,12 @@ AVAILABLE_DISK_SPACE_GB=$(echo | awk -v size="$AVAILABLE_DISK_SPACE_kB" '{print 
 SKIP_FILEIO=0
 
 # Check if file total size for fileio test is smaller than total memory.
-if [ $FILE_TOTAL_SIZE_kB -lt $TOTAL_MEM_kB ]
-then
-	echo -e "\n${FILE_TOTAL_SIZE} GiB default variable too low. Should be greater than available memory ${TOTAL_MEM_GB} GiB." | tee -a ./$RESULT_DIR/test_info
-	echo "Sysbench fileio tests will be skipped." | tee -a ./$RESULT_DIR/test_info
-	SKIP_FILEIO="1$SKIP_FILEIO"
-fi
+# if [ $FILE_TOTAL_SIZE_kB -lt $TOTAL_MEM_kB ]
+# then
+# 	echo -e "\n${FILE_TOTAL_SIZE} GiB default variable too low. Should be greater than available memory ${TOTAL_MEM_GB} GiB." | tee -a ./$RESULT_DIR/test_info
+# 	echo "Sysbench fileio tests will be skipped." | tee -a ./$RESULT_DIR/test_info
+# 	SKIP_FILEIO="1$SKIP_FILEIO"
+# fi
 
 # Check if file total size for fileio test is larger than available disk space.
 if [ $FILE_TOTAL_SIZE_WITH_MARGIN_kB -gt $AVAILABLE_DISK_SPACE_kB ]
@@ -127,7 +132,7 @@ fi
 
 # echo $SKIP_FILEIO
 
-# If one of the previous checks didn't pass exit before running fileio tests.
+# If the previous checks didn't pass exit before running fileio tests.
 if [ $SKIP_FILEIO -gt 0 ]
 then
 	echo -e "\nTest finished.\n"
