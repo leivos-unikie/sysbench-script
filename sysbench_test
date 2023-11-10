@@ -30,7 +30,7 @@ echo -e "$(lscpu)" "\n\n" "$(free)" "\n\n" "$(df)" "\n\n" >> ./$RESULT_DIR/test_
 
 # Check cpu architecture and in case of aarch64 (Orin) check power model
 if lscpu | grep -w "aarch64"
-then 
+then
 	if hostname | grep -w "ghaf-host"
 	then
 		# Power=$(nvpmodel -q | grep -oP '(?<=NV Power Mode:).*')
@@ -47,10 +47,13 @@ then
 			exit 1
 		fi
 	else
-		echo "Virtual environment detected."
-		echo "Not checking power mode."
+		echo -e "\nVirtual environment detected." | tee -a ./$RESULT_DIR/test_info
+		echo "Power mode not checked." | tee -a ./$RESULT_DIR/test_info
+		# If there were a non-interactive way to run 'nvpmodel -q' on ghaf-host power mode could be checked via ssh.
 	fi
 fi
+
+echo -e "\nHost: `hostname`" | tee -a ./$RESULT_DIR/test_info
 
 
 # cpu
