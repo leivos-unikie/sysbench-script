@@ -30,6 +30,8 @@ echo -e "\nSaving information about test environment to ./$RESULT_DIR/test_info\
 echo -e "$(ghaf-version)" "\n" > ./$RESULT_DIR/test_info
 echo -e "$(lscpu)" "\n\n" "$(free)" "\n\n" "$(df)" "\n\n" >> ./$RESULT_DIR/test_info
 
+echo -e "\nHost: `hostname`\n" | tee -a ./$RESULT_DIR/test_info
+
 # Check cpu architecture and in case of aarch64 (Orin) check power model
 if lscpu | grep -w "aarch64"
 then
@@ -54,8 +56,6 @@ then
 		# If there were a non-interactive way to run 'nvpmodel -q' on ghaf-host power mode could be checked via ssh.
 	fi
 fi
-
-echo -e "\nHost: `hostname`" | tee -a ./$RESULT_DIR/test_info
 
 
 # cpu
