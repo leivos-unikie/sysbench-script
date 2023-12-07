@@ -13,10 +13,15 @@ ExpectedPowerModeNo=3
 # FILE_TOTAL_SIZE=
 
 # Extract ghaf-version, date, commit hash
-DATE=$(ghaf-version | cut -d . -f 3)
+# After commit hash was removed from ghaf-version output there is no way to get the build date from
+# run-time system.
+# DATE=$(ghaf-version | cut -d . -f 3)
 
 # Create a directory for the results
-RESULT_DIR=${DATE}_${BUILD_ID}_${DEVICE}_sysbench_results
+# After commit hash was removed from ghaf-version output there is no way to get the build date from
+# run-time system.
+# RESULT_DIR=${DATE}_${BUILD_ID}_${DEVICE}_sysbench_results
+RESULT_DIR=${BUILD_ID}_${DEVICE}_sysbench_results
 echo -e "\nCreating directory for test results:"
 echo "./$RESULT_DIR"
 mkdir $RESULT_DIR
