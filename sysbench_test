@@ -64,21 +64,21 @@ fi
 
 
 # cpu
-sysbench cpu --time=10 --threads=1 --cpu-max-prime=20000 run | tee ./$RESULT_DIR/${DATE}_cpu_1thread_report
+sysbench cpu --time=10 --threads=1 --cpu-max-prime=20000 run | tee ./$RESULT_DIR/cpu_1thread_report
 # If THREADS=1 do not repeat the test for multiple threads.
 if [ $THREADS -gt 1 ]
 then
-	sysbench cpu --time=10 --threads=${THREADS} --cpu-max-prime=20000 run | tee ./$RESULT_DIR/${DATE}_cpu_report
+	sysbench cpu --time=10 --threads=${THREADS} --cpu-max-prime=20000 run | tee ./$RESULT_DIR/cpu_report
 fi
 
 # memory
-sysbench memory --time=60 --memory-oper=read --threads=1 run | tee ./$RESULT_DIR/${DATE}_memory_rd_1thread_report
-sysbench memory --time=60 --memory-oper=write --threads=1 run | tee ./$RESULT_DIR/${DATE}_memory_wr_1thread_report
+sysbench memory --time=60 --memory-oper=read --threads=1 run | tee ./$RESULT_DIR/memory_rd_1thread_report
+sysbench memory --time=60 --memory-oper=write --threads=1 run | tee ./$RESULT_DIR/memory_wr_1thread_report
 # If THREADS=1 do not repeat the test for multiple threads.
 if [ $THREADS -gt 1 ]
 then
-	sysbench memory --time=15 --memory-oper=read --threads=${THREADS} run | tee ./$RESULT_DIR/${DATE}_memory_rd_report
-	sysbench memory --time=30 --memory-oper=write --threads=${THREADS} run | tee ./$RESULT_DIR/${DATE}_memory_wr_report
+	sysbench memory --time=15 --memory-oper=read --threads=${THREADS} run | tee ./$RESULT_DIR/memory_rd_report
+	sysbench memory --time=30 --memory-oper=write --threads=${THREADS} run | tee ./$RESULT_DIR/memory_wr_report
 fi
 
 
@@ -145,9 +145,9 @@ then
 fi
 
 sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqrd prepare
-sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqrd --time=30 run | tee ./$RESULT_DIR/${DATE}_fileio_rd_report
+sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqrd --time=30 run | tee ./$RESULT_DIR/fileio_rd_report
 sysbench fileio cleanup
-sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqwr --time=30 run | tee ./$RESULT_DIR/${DATE}_fileio_wr_report
+sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqwr --time=30 run | tee ./$RESULT_DIR/fileio_wr_report
 sysbench fileio cleanup
 
 echo -e "\nTest finished.\n"
