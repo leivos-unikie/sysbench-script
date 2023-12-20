@@ -13,7 +13,7 @@ ExpectedPowerModeNo=3
 # FILE_TOTAL_SIZE=
 
 # Extract ghaf-version, date, commit hash
-# After commit hash was removed from ghaf-version output there is no way to get the build date from
+# After commit date and hash was removed from ghaf-version output there is no way to get the build date from
 # run-time system.
 # DATE=$(ghaf-version | cut -d . -f 3)
 
@@ -32,7 +32,7 @@ cp ${FileName} ./$RESULT_DIR
 
 # Create test_info file with ghaf-version and information about the run environment: lscpu, free, df
 echo -e "\nSaving information about test environment to ./$RESULT_DIR/test_info\n"
-echo -e "$(ghaf-version)" "\n" > ./$RESULT_DIR/test_info
+# echo -e "$(ghaf-version)" "\n" > ./$RESULT_DIR/test_info
 echo -e "$(lscpu)" "\n\n" "$(free)" "\n\n" "$(df)" "\n\n" >> ./$RESULT_DIR/test_info
 
 echo -e "\nHost: `hostname`\n" | tee -a ./$RESULT_DIR/test_info
@@ -92,12 +92,13 @@ TOTAL_MEM_GiB=$(free -h | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
 TOTAL_MEM_kB=$(free | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
 # echo $TOTAL_MEM_GiB
 
-# Set FILE_TOTAL_SIZE 4GiB higher than the total memory
-FILE_TOTAL_SIZE=$(echo | awk -v size="$TOTAL_MEM_GiB" '{print size + 4}')
+# Set FILE_TOTAL_SIZE 4GB higher than the total memory
+FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$TOTAL_MEM_kB" '{print size + 4000000}')
 
-# Calculate FILE_TOTAL_SIZE (GiB) in GB
-FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
-FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
+# Calculate FILE_TOTAL_SIZE_kB in GB
+FILE_TOTAL_SIZE_GB=$(echo | expr $FILE_TOTAL_SIZE_kB / 1000000)
+# FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
+# FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
 # echo $FILE_TOTAL_SIZE_kB
 
 # Add 10% margin to FILE_TOTAL_SIZE_GB for disk space test
@@ -123,7 +124,7 @@ SKIP_FILEIO=0
 # Check if file total size for fileio test is larger than available disk space.
 if [ $FILE_TOTAL_SIZE_WITH_MARGIN_kB -gt $AVAILABLE_DISK_SPACE_kB ]
 then
-	echo -e "\nAvailable disk space ${AVAILABLE_DISK_SPACE_kB} kB too low. Should be 20% greater than FILE_TOTAL_SIZE ${FILE_TOTAL_SIZE} GiB." | tee -a ./$RESULT_DIR/test_info
+	echo -e "\nAvailable disk space ${AVAILABLE_DISK_SPACE_kB} kB too low. Should be 20% greater than FILE_TOTAL_SIZE ${FILE_TOTAL_SIZE_kB} kB." | tee -a ./$RESULT_DIR/test_info
 	echo "Sysbench fileio tests will be skipped." | tee -a ./$RESULT_DIR/test_info
 	SKIP_FILEIO="1$SKIP_FILEIO"
 fi
