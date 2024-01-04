@@ -2,9 +2,9 @@
 
 # Edit these variables before running:
 # orin-nx, orin-agx, nuc, icicle-kit, lenovo-x1 
-DEVICE=dummy
-BUILD_ID=0
-THREADS=1
+DEVICE=$1
+BUILD_ID=$2
+THREADS=$3
 
 # Defaults
 ExpectedPowerModeNo=3
@@ -24,7 +24,7 @@ ExpectedPowerModeNo=3
 RESULT_DIR=${BUILD_ID}_${DEVICE}_sysbench_results
 echo -e "\nCreating directory for test results:"
 echo "./$RESULT_DIR"
-mkdir $RESULT_DIR
+mkdir -p $RESULT_DIR
 
 # Copy this test script file itself into the result directory
 FileName=${0##*/}
