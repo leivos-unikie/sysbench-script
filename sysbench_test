@@ -2,9 +2,9 @@
 
 # Edit these variables before running:
 # orin-nx, orin-agx, nuc, icicle-kit, lenovo-x1 
-DEVICE=$1
-BUILD_ID=$2
-THREADS=$3
+DEVICE="$1"
+BUILD_ID="$2"
+THREADS="$3"
 
 # Defaults
 ExpectedPowerModeNo=3
