@@ -1,7 +1,7 @@
 # Test set to be run with sysbench
 
-# Edit these variables before running:
-# orin-nx, orin-agx, nuc, icicle-kit, lenovo-x1 
+# These variables need to be given on the command line.
+# For example: ./sysbench_test lenovo-x1 99 20
 DEVICE="$1"
 BUILD_ID="$2"
 THREADS="$3"
@@ -95,11 +95,14 @@ TOTAL_MEM_kB=$(free | awk -F: 'NR==2 {print $2}' | awk  '{print $1}')
 # Set FILE_TOTAL_SIZE 4GB higher than the total memory
 FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$TOTAL_MEM_kB" '{print size + 4000000}')
 
-# Calculate FILE_TOTAL_SIZE_kB in GB
+# Calculate FILE_TOTAL_SIZE_GB in GB
 FILE_TOTAL_SIZE_GB=$(echo | expr $FILE_TOTAL_SIZE_kB / 1000000)
 # FILE_TOTAL_SIZE_GB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1.074}' | cut -d . -f 1)
 # FILE_TOTAL_SIZE_kB=$(echo | awk -v size="$FILE_TOTAL_SIZE" '{print size * 1024 * 1024}')
 # echo $FILE_TOTAL_SIZE_kB
+
+# Calculate FILE_TOTAL_SIZE in GiB
+FILE_TOTAL_SIZE=$(echo | expr $FILE_TOTAL_SIZE_kB / 1024 / 1024)
 
 # Add 10% margin to FILE_TOTAL_SIZE_GB for disk space test
 FILE_TOTAL_SIZE_WITH_MARGIN_kB=$(echo | expr $FILE_TOTAL_SIZE_kB / 10 + $FILE_TOTAL_SIZE_kB)
