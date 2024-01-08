@@ -9,8 +9,7 @@ test_type = "memory_rd_1thread_report"
 # test_type = "memory_wr_1thread_report"
 # test_type = "cpu_1thread_report"
 
-# path_to_data = "/home/samuli/Desktop/Testing/sysbench/sysbench_test_results/Orin_NX"
-path_to_data = "/home/samuli/PycharmProjects/test1/result_data"
+path_to_data = "./result_data"
 
 
 def list_vm_files(file_list, vm_name):
