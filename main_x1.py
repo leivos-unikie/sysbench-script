@@ -5,7 +5,7 @@ from tools import *
 
 target_ip = '10.0.0.10'
 output_file = 'ssh.log'
-build_id = 2
+build_id = 3
 
 
 def main():
@@ -55,19 +55,30 @@ def main():
             run_test(chan, file, 'host', build_id, 20)
 
             # Copy test_script to net-vm and ssh into net-vm
-            log_netvm(chan)
+            log_netvm(chan, file)
+
+            # Run test in ids-vm 192.168.100.3
+            # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', build_id, 1)
+
+            # Run test in net-vm
             run_test(chan, file, 'net-vm', build_id, 1)
 
-            test_appvms_from_netvm(chan, file, build_id)
+            # Run test in other VMs
+            test_appvms_from_netvm(chan, output_file, build_id)
 
             # Pull the data from net-vm to host
             time.sleep(2)
-            send_and_receive(chan, 'exit\n', 2, 9999)
-            send_and_receive(chan, 'scp -r ghaf@192.168.101.1:/home/ghaf/* ./\n', 2, 9999)
-            send_and_receive(chan, 'ghaf\n', 3, 9999)
+            send_and_receive(chan, file, 'exit\n', 5, 9999)
+            if send_and_receive(chan, file, 'scp -r ghaf@192.168.101.1:/home/ghaf/* ./\n', 5, 9999, 'assword'):
+                send_and_receive(chan, file, 'ghaf\n', 5, 9999)
+                time.sleep(3)
 
         else:
             if check_hostname(''.join(output), 'net-vm'):
+
+                # Run test in ids-vm 192.168.100.3
+                # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', build_id, 1)
+
                 test_appvms_from_netvm(chan, file, build_id)
                 run_test(chan, file, 'net-vm', build_id, 1)
 
@@ -97,4 +108,4 @@ def main():
 main()
 
 # Pull the result files out from the target machine.
-os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/* ./result_data\n".format(target_ip))
+# os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/* ./result_data\n".format(target_ip))
