@@ -10,6 +10,8 @@ from extract_value import *
 # Select 2 to plot 1thread cpu speed test profile
 test = '2'
 
+last_test_run_no = 5
+
 test_type = None
 
 if test == '0':
@@ -27,7 +29,7 @@ path_to_data = "./result_data"
 def list_vm_files(file_list, vm_name):
     list_vm = []
     for f in file_list:
-        if f.find(vm_name) != -1:
+        if f.find(vm_name) != -1 and f.split('/')[-1].find('report') != -1:
             list_vm.append(f)
     return list_vm
 
@@ -43,7 +45,9 @@ def list_files(path):
 
 
 def extract_values(file_list, report_type, detect_string, start_string, end_string):
-    values = []
+
+    values = [0] * (last_test_run_no + 1)
+
     for f in file_list:
         if f.endswith(report_type):
             # Print also some file info to help tracking.
@@ -51,11 +55,14 @@ def extract_values(file_list, report_type, detect_string, start_string, end_stri
             time_created_h = datetime.datetime.fromtimestamp(time_created)
             print(time_created_h)
             print(f)
-            value = float(extract(f, detect_string, start_string, end_string))
-            print(value)
-            print()
 
-            values.append(value)
+            value = float(extract(f, detect_string, start_string, end_string))
+            index = int(f.split('/')[-2].split('_')[0])
+
+            print(value)
+            print(index)
+
+            values[index] = value
 
     return values
 
@@ -86,6 +93,7 @@ vm_bar(plt, files_list, "gui-vm", 0.2, 'r')
 vm_bar(plt, files_list, "chromium-vm", 0.3, 'y')
 vm_bar(plt, files_list, "gala-vm", 0.4, 'k')
 vm_bar(plt, files_list, "zathura-vm", 0.5, 'm')
+vm_bar(plt, files_list, "ids-vm", 0.6, 'lime')
 
 plt.legend()
 plt.xlabel('Test run')
