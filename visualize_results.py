@@ -8,9 +8,12 @@ from extract_value import *
 # Select 0 to plot 1thread memory read test profile
 # Select 1 to plot 1thread memory write test profile
 # Select 2 to plot 1thread cpu speed test profile
-test = '2'
+test = '1'
 
-last_test_run_no = 5
+# Limit the range of plotted test runs
+first_test_run_no = 0   # test runs with lower number won't be shown
+last_test_run_no = 9    # test runs with higher number won't be shown
+
 
 test_type = None
 
@@ -50,21 +53,24 @@ def extract_values(file_list, report_type, detect_string, start_string, end_stri
 
     for f in file_list:
         if f.endswith(report_type):
-            # Print also some file info to help tracking.
-            time_created = os.path.getctime(f)
-            time_created_h = datetime.datetime.fromtimestamp(time_created)
-            print(time_created_h)
-            print(f)
+
+            # Print also some file info.
+            # time_created = os.path.getctime(f)
+            # time_created_h = datetime.datetime.fromtimestamp(time_created)
+            # print(time_created_h)
+            # print(f)
+            # print()
+
+            index = int(f.split('/')[-2].split('_')[0])
+            if index > last_test_run_no: continue
 
             value = float(extract(f, detect_string, start_string, end_string))
-            index = int(f.split('/')[-2].split('_')[0])
-
-            print(value)
-            print(index)
 
             values[index] = value
 
-    return values
+    values_sliced = values[first_test_run_no:]
+
+    return values_sliced
 
 
 def vm_bar(plt, file_list, vm_name, x_offset, c):
@@ -79,8 +85,12 @@ def vm_bar(plt, file_list, vm_name, x_offset, c):
     else:
         return
 
-    # Here rounding caused errors if '1 + x_offset + len(vm_values)' was used as stop.
-    xpoints = list(np.arange(1 + x_offset, 0.9 + x_offset + len(vm_values), 1))
+    print("List of " + vm_name + " results")
+    print(vm_values)
+    print()
+
+    # Here rounding caused errors if 'last_test_run_no + x_offset' was used as stop.
+    xpoints = list(np.arange(first_test_run_no + x_offset, last_test_run_no + x_offset + 0.9, 1))
     plt.bar(xpoints, vm_values, label=vm_name, color=c, width=0.1)
     return
 
@@ -97,6 +107,7 @@ vm_bar(plt, files_list, "ids-vm", 0.6, 'lime')
 
 plt.legend()
 plt.xlabel('Test run')
+plt.xticks(np.arange(first_test_run_no, last_test_run_no + 1, step=1))
 
 if test == '2':
     # For cpu test
