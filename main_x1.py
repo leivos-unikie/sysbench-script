@@ -5,8 +5,12 @@ from tools import *
 
 target_ip = '10.0.0.10'
 output_file = 'ssh.log'
-build_id = 3
+test_run = 6
 
+# This could optionally be used as an arbitrary name of the ghaf build under test.
+# Build labels could show on the x-axis of the plot produced by visualize_results.py
+# May be left empty
+# build_label = ""
 
 def main():
     start_time = time.time()
@@ -51,20 +55,24 @@ def main():
         print(''.join(output))
 
         if check_hostname(''.join(output), 'ghaf-host'):
+            # Create directory for the test results and move there
+            result_dir(chan, file, test_run)
+
             # Run test first on ghaf-host
-            run_test(chan, file, 'host', build_id, 20)
+            run_test(chan, file, 'host', test_run, 20)
 
             # Copy test_script to net-vm and ssh into net-vm
             log_netvm(chan, file)
 
             # Run test in ids-vm 192.168.100.3
-            # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', build_id, 1)
+            # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', test_run, 1)
 
             # Run test in net-vm
-            run_test(chan, file, 'net-vm', build_id, 1)
+            run_test(chan, file, 'net-vm', test_run, 1)
 
             # Run test in other VMs
-            test_appvms_from_netvm(chan, output_file, build_id)
+            # test_appvms_from_netvm(chan, output_file, test_run)
+            test_appvms_by_ip(chan, output_file, test_run)
 
             # Pull the data from net-vm to host
             time.sleep(2)
@@ -73,17 +81,22 @@ def main():
                 send_and_receive(chan, file, 'ghaf\n', 5, 9999)
                 time.sleep(3)
 
+        elif check_hostname(''.join(output), 'net-vm'):
+
+            # Create directory for the test results and move there
+            result_dir(chan, file, test_run)
+
+            # Run test in ids-vm 192.168.100.3
+            # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', test_run, 1)
+
+            test_appvms_from_netvm(chan, file, test_run)
+            run_test(chan, file, 'net-vm', test_run, 1)
+
+            # Test also on ghaf-host and pull data
+            appvm_from_netvm(chan, file, '192.168.101.2', 'host', test_run, 20)
+
         else:
-            if check_hostname(''.join(output), 'net-vm'):
-
-                # Run test in ids-vm 192.168.100.3
-                # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', build_id, 1)
-
-                test_appvms_from_netvm(chan, file, build_id)
-                run_test(chan, file, 'net-vm', build_id, 1)
-
-                # Test also on ghaf-host and pull data
-                appvm_from_netvm(chan, file, '192.168.101.2', 'host', build_id, 20)
+            print("Unknown hostname.")
 
         # Pull the data out
         # Does not work with *
@@ -108,4 +121,4 @@ def main():
 main()
 
 # Pull the result files out from the target machine.
-# os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/* ./result_data\n".format(target_ip))
+# os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./result_data\n".format(target_ip, test_run))

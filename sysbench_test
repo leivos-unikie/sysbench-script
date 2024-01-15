@@ -3,7 +3,7 @@
 # These variables need to be given on the command line.
 # For example: ./sysbench_test lenovo-x1 99 20
 DEVICE="$1"
-BUILD_ID="$2"
+TEST_RUN="$2"
 THREADS="$3"
 
 # Defaults
@@ -20,8 +20,8 @@ ExpectedPowerModeNo=3
 # Create a directory for the results
 # After commit hash was removed from ghaf-version output there is no way to get the build date from
 # run-time system.
-# RESULT_DIR=${DATE}_${BUILD_ID}_${DEVICE}_sysbench_results
-RESULT_DIR=${BUILD_ID}_${DEVICE}_sysbench_results
+# RESULT_DIR=${DATE}_${TEST_RUN}_${DEVICE}_sysbench_results
+RESULT_DIR=${TEST_RUN}_${DEVICE}_sysbench_results
 echo -e "\nCreating directory for test results:"
 echo "./$RESULT_DIR"
 mkdir -p $RESULT_DIR
