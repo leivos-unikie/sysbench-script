@@ -5,7 +5,10 @@ from tools import *
 
 target_ip = '10.0.0.10'
 output_file = 'ssh.log'
-test_run = 6
+test_run = 7
+
+# This will be saved to root of the main result directory
+long_build_description = "Testing PR#427 Refactor: dns+dhcp if fix has normalized performance."
 
 # This could optionally be used as an arbitrary name of the ghaf build under test.
 # Build labels could show on the x-axis of the plot produced by visualize_results.py
@@ -56,7 +59,7 @@ def main():
 
         if check_hostname(''.join(output), 'ghaf-host'):
             # Create directory for the test results and move there
-            result_dir(chan, file, test_run)
+            result_dir(chan, file, test_run, long_build_description)
 
             # Run test first on ghaf-host
             run_test(chan, file, 'host', test_run, 20)

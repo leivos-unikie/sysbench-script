@@ -1,11 +1,12 @@
 import time
 
 
-def result_dir(chan, file, test_run):
+def result_dir(chan, file, test_run, long_build_description):
     # Create directory for the test results and move there
     send_and_receive(chan, file, 'mkdir Test_run_{}\n'.format(test_run), 1, 999)
     send_and_receive(chan, file, 'mv sysbench_test ./Test_run_{}\n'.format(test_run), 2, 999)
     send_and_receive(chan, file, 'cd Test_run_{}\n'.format(test_run), 2, 999)
+    send_and_receive(chan, file, 'echo "{}" >> build_description.txt\n'.format(long_build_description), 2, 999)
 
 
 def send_and_receive(chan, file, cmd, wait_time, recv_buffer, expected=''):
