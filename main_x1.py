@@ -5,10 +5,10 @@ from tools import *
 
 target_ip = '10.0.0.10'
 output_file = 'ssh.log'
-test_run = 7
+test_run = 9
 
 # This will be saved to root of the main result directory
-long_build_description = "Testing PR#427 Refactor: dns+dhcp if fix has normalized performance."
+long_build_description = "Test PR#451 Fix waypipe in labwc."
 
 # This could optionally be used as an arbitrary name of the ghaf build under test.
 # Build labels could show on the x-axis of the plot produced by visualize_results.py
@@ -74,8 +74,10 @@ def main():
             run_test(chan, file, 'net-vm', test_run, 1)
 
             # Run test in other VMs
-            # test_appvms_from_netvm(chan, output_file, test_run)
-            test_appvms_by_ip(chan, output_file, test_run)
+            test_appvms_from_netvm(chan, output_file, test_run)
+
+            # Before enabling this ensure that IPs in tools.test_appvms_by_ip match with the hostnames.
+            # test_appvms_by_ip(chan, output_file, test_run)
 
             # Pull the data from net-vm to host
             time.sleep(2)
@@ -87,7 +89,7 @@ def main():
         elif check_hostname(''.join(output), 'net-vm'):
 
             # Create directory for the test results and move there
-            result_dir(chan, file, test_run)
+            result_dir(chan, file, test_run, long_build_description)
 
             # Run test in ids-vm 192.168.100.3
             # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', test_run, 1)
