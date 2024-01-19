@@ -126,9 +126,11 @@ def test_appvms_from_netvm(chan, file, test_run):
     appvm_from_netvm(chan, file, 'zathura-vm', 'zathura-vm', test_run, 1)
     appvm_from_netvm(chan, file, 'gui-vm', 'gui-vm', test_run, 2)
     # appvm_from_netvm(chan, file, 'ids-vm', 'ids-vm', test_run, 1)
+    # appvm_from_netvm(chan, file, 'audio-vm', 'audio-vm', test_run, 1)
     return
 
 
+# IPs have to be checked after each boot if going to use this.
 def test_appvms_by_ip(chan, file, test_run):
     appvm_from_netvm(chan, file, '192.168.100.4', 'chromium-vm', test_run, 4)
     appvm_from_netvm(chan, file, '192.168.100.3', 'gala-vm', test_run, 2)
