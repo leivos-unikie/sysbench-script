@@ -8,10 +8,10 @@ from extract_value import *
 # Select 0 to plot 1thread memory read test profile
 # Select 1 to plot 1thread memory write test profile
 # Select 2 to plot 1thread cpu speed test profile
-test = '1'
+test = '0'
 
 # Limit the range of plotted test runs
-first_test_run_no = 0   # test runs with lower number won't be shown
+first_test_run_no = 8   # test runs with lower number won't be shown
 last_test_run_no = 9    # test runs with higher number won't be shown
 
 
@@ -22,7 +22,13 @@ if test == '0':
 elif test == '1':
     test_type = "memory_wr_1thread_report"
 elif test == '2':
+    test_type = "memory_rd_report"
+elif test == '3':
+    test_type = "memory_wr_report"
+elif test == '4':
     test_type = "cpu_1thread_report"
+elif test == '5':
+    test_type = "cpu_report"
 else:
     exit(1)
 
@@ -76,10 +82,10 @@ def extract_values(file_list, report_type, detect_string, start_string, end_stri
 def vm_bar(plt, file_list, vm_name, x_offset, c):
     vm_files = list_vm_files(file_list, vm_name)
 
-    if test == '0' or test == '1':
+    if test == '0' or test == '1' or test == '2' or test == '3':
         # For memory test results
         vm_values = extract_values(vm_files, test_type, "MiB transferred", "(", " MiB/sec")
-    elif test == '2':
+    elif test == '4' or test == '5':
         # For cpu test results
         vm_values = extract_values(vm_files, test_type, "events per second:", "events per second:", "\n")
     else:
@@ -104,6 +110,7 @@ vm_bar(plt, files_list, "chromium-vm", 0.3, 'y')
 vm_bar(plt, files_list, "gala-vm", 0.4, 'k')
 vm_bar(plt, files_list, "zathura-vm", 0.5, 'm')
 vm_bar(plt, files_list, "ids-vm", 0.6, 'lime')
+vm_bar(plt, files_list, "audio-vm", 0.7, 'pink')
 
 plt.legend()
 plt.xlabel('Test run')
