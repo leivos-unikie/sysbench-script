@@ -5,10 +5,11 @@ from tools import *
 
 target_ip = '10.0.0.10'
 output_file = 'ssh.log'
-test_run = 9
+test_run = 13
 
 # This will be saved to root of the main result directory
-long_build_description = "Test PR#451 Fix waypipe in labwc."
+long_build_description = """Test PR#406 PowerControl over ssh
+"""
 
 # This could optionally be used as an arbitrary name of the ghaf build under test.
 # Build labels could show on the x-axis of the plot produced by visualize_results.py

@@ -5,18 +5,14 @@ import datetime
 
 from extract_value import *
 
-# Select 0 to plot 1thread memory read test profile
-# Select 1 to plot 1thread memory write test profile
-# Select 2 to plot 1thread cpu speed test profile
-test = '0'
 
 # Limit the range of plotted test runs
 first_test_run_no = 8   # test runs with lower number won't be shown
-last_test_run_no = 9    # test runs with higher number won't be shown
+last_test_run_no = 12   # test runs with higher number won't be shown
 
-
+# Select which test type to plot: 0-5
+test = '4'
 test_type = None
-
 if test == '0':
     test_type = "memory_rd_1thread_report"
 elif test == '1':
@@ -112,7 +108,7 @@ vm_bar(plt, files_list, "zathura-vm", 0.5, 'm')
 vm_bar(plt, files_list, "ids-vm", 0.6, 'lime')
 vm_bar(plt, files_list, "audio-vm", 0.7, 'pink')
 
-plt.legend()
+plt.legend(loc='lower left')
 plt.xlabel('Test run')
 plt.xticks(np.arange(first_test_run_no, last_test_run_no + 1, step=1))
 
