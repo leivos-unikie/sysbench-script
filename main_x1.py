@@ -108,7 +108,7 @@ def main():
         # Does not work with *
         # Should zip the files first but no zip available on ghaf
         # scp = client.open_sftp()
-        # scp.get('/home/ghaf/*', './result_data/')
+        # scp.get('/home/ghaf/Test_run_{}', './../result_data/'.format(test_run))
         # time.sleep(2)
         # Close the SCP client
         # scp.close()
@@ -127,4 +127,4 @@ def main():
 main()
 
 # Pull the result files out from the target machine.
-# os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./result_data\n".format(target_ip, test_run))
+# os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./../result_data\n".format(target_ip, test_run))

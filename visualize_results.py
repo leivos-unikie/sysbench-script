@@ -28,7 +28,7 @@ elif test == '5':
 else:
     exit(1)
 
-path_to_data = "./result_data"
+path_to_data = "./../result_data"
 
 
 def list_vm_files(file_list, vm_name):
