@@ -7,11 +7,11 @@ from extract_value import *
 
 
 # Limit the range of plotted test runs
-first_test_run_no = 8   # test runs with lower number won't be shown
-last_test_run_no = 12   # test runs with higher number won't be shown
+first_test_run_no = 6   # test runs with lower number won't be shown
+last_test_run_no = 13   # test runs with higher number won't be shown
 
 # Select which test type to plot: 0-5
-test = '4'
+test = '5'
 test_type = None
 if test == '0':
     test_type = "memory_rd_1thread_report"
@@ -112,7 +112,7 @@ plt.legend(loc='lower left')
 plt.xlabel('Test run')
 plt.xticks(np.arange(first_test_run_no, last_test_run_no + 1, step=1))
 
-if test == '2':
+if int(test) < 4:
     # For cpu test
     plt.ylabel('Events per second')
 else:
