@@ -23,9 +23,6 @@ def main():
         file = open(output_file, "a")
         port = 22
 
-        # Remove old ssh key from known_hosts
-        # os.system('ssh-keygen -f "/home/samuli/.ssh/known_hosts" -R "10.0.0.10"')
-
         # created client using paramiko
         client = paramiko.SSHClient()
 
@@ -42,9 +39,7 @@ def main():
         chan = client.invoke_shell()
 
         scp = client.open_sftp()
-        # scp.put('/home/samuli/repos/sysbench_script/sysbench_test', '/home/ghaf/sysbench_test')
-        # scp.put('./sysbench_test', '/home/ghaf/sysbench_test')
-        scp.put('/home/samuli/repos/sysbench_script/sysbench_test', '/home/ghaf/sysbench_test')
+        scp.put('./sysbench_test', '/home/ghaf/sysbench_test')
 
         time.sleep(2)
         # Close the SCP client
@@ -127,4 +122,5 @@ def main():
 main()
 
 # Pull the result files out from the target machine.
-# os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./../result_data\n".format(target_ip, test_run))
+os.system('ssh-keygen -R {}'.format(target_ip))
+os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./../sysbench_result_data/lenovo-x1/\n".format(target_ip, test_run))

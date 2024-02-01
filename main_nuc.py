@@ -3,12 +3,12 @@ import os
 import time
 from tools import *
 
-target_ip = '192.168.100.39'
+target_ip = '172.18.8.149'
 output_file = 'ssh.log'
 test_run = 1
 
 # This will be saved to root of the main result directory
-long_build_description = "Regression testing 16.1.2024."
+long_build_description = "Regression testing for themisto buid 134 on 2024-02-01."
 
 # This could optionally be used as an arbitrary name of the ghaf build under test.
 # Build labels could show on the x-axis of the plot produced by visualize_results.py
@@ -23,7 +23,7 @@ def main():
         port = 22
 
         # Remove old ssh key from known_hosts
-        # os.system('ssh-keygen -f "/home/samuli/.ssh/known_hosts" -R "10.0.0.10"')
+        # os.system('ssh-keygen -f "~/.ssh/known_hosts" -R {}'.format(target_ip))
 
         # created client using paramiko
         client = paramiko.SSHClient()
@@ -41,9 +41,8 @@ def main():
         chan = client.invoke_shell()
 
         scp = client.open_sftp()
-        # scp.put('/home/samuli/repos/sysbench_script/sysbench_test', '/home/ghaf/sysbench_test')
         # scp.put('./sysbench_test', '/home/ghaf/sysbench_test')
-        scp.put('/home/samuli/repos/sysbench_script/sysbench_test', '/home/ghaf/sysbench_test')
+        scp.put('./sysbench_test', '/home/ghaf/sysbench_test')
 
         time.sleep(2)
         # Close the SCP client
@@ -124,4 +123,5 @@ def main():
 main()
 
 # Pull the result files out from the target machine.
-# os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./result_data\n".format(target_ip, test_run))
+os.system('ssh-keygen -R {}'.format(target_ip))
+os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./../sysbench_result_data/nuc/\n".format(target_ip, test_run))
