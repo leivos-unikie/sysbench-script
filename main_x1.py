@@ -122,5 +122,4 @@ def main():
 main()
 
 # Pull the result files out from the target machine.
-os.system('ssh-keygen -R {}'.format(target_ip))
-os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./../sysbench_result_data/lenovo-x1/\n".format(target_ip, test_run))
+os.system("sshpass -p 'ghaf' scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ghaf@{}:/home/ghaf/Test_run_{} ./../sysbench_result_data/lenovo-x1/\n".format(target_ip, test_run))
