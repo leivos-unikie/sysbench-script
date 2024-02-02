@@ -11,23 +11,33 @@ path_to_data = "./../sysbench_result_data/lenovo-x1/"
 first_test_run_no = 0   # test runs with lower number won't be shown
 last_test_run_no = 13   # test runs with higher number won't be shown
 
-# Select which test type to plot: 0-5
-test = '0'
+
 test_type = None
-if test == '0':
-    test_type = "memory_rd_1thread_report"
-elif test == '1':
-    test_type = "memory_wr_1thread_report"
-elif test == '2':
-    test_type = "memory_rd_report"
-elif test == '3':
-    test_type = "memory_wr_report"
-elif test == '4':
-    test_type = "cpu_1thread_report"
-elif test == '5':
-    test_type = "cpu_report"
-else:
-    exit(1)
+test = None
+
+# Select which test type to plot: 0-5
+def select_test_type():
+
+    global test_type
+
+    if test == 0:
+        test_type = "memory_rd_1thread_report"
+    elif test == 1:
+        test_type = "memory_wr_1thread_report"
+    elif test == 2:
+        test_type = "memory_rd_report"
+    elif test == 3:
+        test_type = "memory_wr_report"
+    elif test == 4:
+        test_type = "cpu_1thread_report"
+    elif test == 5:
+        test_type = "cpu_report"
+    else:
+        exit(1)
+
+    print(test)
+    print(test_type)
+    print()
 
 
 def list_vm_files(file_list, vm_name):
@@ -77,10 +87,10 @@ def extract_values(file_list, report_type, detect_string, start_string, end_stri
 def vm_bar(plt, file_list, vm_name, x_offset, c):
     vm_files = list_vm_files(file_list, vm_name)
 
-    if test == '0' or test == '1' or test == '2' or test == '3':
+    if test < 4:
         # For memory test results
         vm_values = extract_values(vm_files, test_type, "MiB transferred", "(", " MiB/sec")
-    elif test == '4' or test == '5':
+    elif test > 3:
         # For cpu test results
         vm_values = extract_values(vm_files, test_type, "events per second:", "events per second:", "\n")
     else:
@@ -95,32 +105,41 @@ def vm_bar(plt, file_list, vm_name, x_offset, c):
     plt.bar(xpoints, vm_values, label=vm_name, color=c, width=0.1)
     return
 
+def main_loop(plt):
 
-files_list = list_files(path_to_data)
+    files_list = list_files(path_to_data)
 
-vm_bar(plt, files_list, "host", 0, 'b')
-vm_bar(plt, files_list, "net-vm", 0.1, 'g')
-vm_bar(plt, files_list, "gui-vm", 0.2, 'r')
-vm_bar(plt, files_list, "chromium-vm", 0.3, 'y')
-vm_bar(plt, files_list, "gala-vm", 0.4, 'k')
-vm_bar(plt, files_list, "zathura-vm", 0.5, 'm')
-vm_bar(plt, files_list, "ids-vm", 0.6, 'lime')
-vm_bar(plt, files_list, "audio-vm", 0.7, 'pink')
+    vm_bar(plt, files_list, "host", 0, 'b')
+    vm_bar(plt, files_list, "net-vm", 0.1, 'g')
+    vm_bar(plt, files_list, "gui-vm", 0.2, 'r')
+    vm_bar(plt, files_list, "chromium-vm", 0.3, 'y')
+    vm_bar(plt, files_list, "gala-vm", 0.4, 'k')
+    vm_bar(plt, files_list, "zathura-vm", 0.5, 'm')
+    vm_bar(plt, files_list, "ids-vm", 0.6, 'lime')
+    vm_bar(plt, files_list, "audio-vm", 0.7, 'pink')
 
-plt.legend(loc='lower left')
+    plt.legend(loc='lower left')
+
+    if test < 4:
+        # For cpu test
+        plt.ylabel('Events per second')
+    else:
+        # For memory test
+        plt.ylabel('MiB/sec')
+
+    plt.title(test_type)
+
+    plt.savefig("{}{}_from_test_runs_{}-{}.jpg".format(path_to_data, test_type, first_test_run_no, last_test_run_no))
+
+    # Print the chart
+    # plt.show()
+
+
 plt.xlabel('Test run')
 plt.xticks(np.arange(first_test_run_no, last_test_run_no + 1, step=1))
 
-if int(test) < 4:
-    # For cpu test
-    plt.ylabel('Events per second')
-else:
-    # For memory test
-    plt.ylabel('MiB/sec')
-
-plt.title(test_type)
-
-plt.savefig("{}{}_from_test_runs_{}-{}.jpg".format(path_to_data, test_type, first_test_run_no, last_test_run_no))
-
-# Print the chart
-plt.show()
+for t in range(0, 6):
+    test = t
+    select_test_type()
+    main_loop(plt)
+    plt.cla()
