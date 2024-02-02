@@ -7,11 +7,11 @@ from extract_value import *
 
 
 # Limit the range of plotted test runs
-first_test_run_no = 6   # test runs with lower number won't be shown
+first_test_run_no = 0   # test runs with lower number won't be shown
 last_test_run_no = 13   # test runs with higher number won't be shown
 
 # Select which test type to plot: 0-5
-test = '5'
+test = '0'
 test_type = None
 if test == '0':
     test_type = "memory_rd_1thread_report"
@@ -120,6 +120,8 @@ else:
     plt.ylabel('MiB/sec')
 
 plt.title(test_type)
+
+plt.savefig("{}{}_from_test_runs_{}-{}.jpg".format(path_to_data, test_type, first_test_run_no, last_test_run_no))
 
 # Print the chart
 plt.show()
