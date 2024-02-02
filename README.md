@@ -18,3 +18,9 @@ Save plots of all test types as .jpg files
   - path to data
   - test run range to be shown
 - Save plots by running: python visualize_results2.py
+
+Plot fileio read/write tests (only ghaf-host)
+- Edit parameters in the beginning of visualize_fileio_results.py
+  - path to data
+  - test run range to be shown
+- Save plots by running: python visualize_fileio_results.py 
