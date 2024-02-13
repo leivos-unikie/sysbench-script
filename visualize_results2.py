@@ -8,8 +8,8 @@ from extract_value import *
 path_to_data = "./../sysbench_result_data/lenovo-x1/"
 
 # Limit the range of plotted test runs
-first_test_run_no = 0   # test runs with lower number won't be shown
-last_test_run_no = 13   # test runs with higher number won't be shown
+first_test_run_no = 8   # test runs with lower number won't be shown
+last_test_run_no = 14   # test runs with higher number won't be shown
 
 
 test_type = None
@@ -117,6 +117,7 @@ def main_loop(plt):
     vm_bar(plt, files_list, "zathura-vm", 0.5, 'm')
     vm_bar(plt, files_list, "ids-vm", 0.6, 'lime')
     vm_bar(plt, files_list, "audio-vm", 0.7, 'pink')
+    vm_bar(plt, files_list, "element-vm", 0.8, 'turquoise')
 
     plt.legend(loc='lower left')
 
@@ -128,6 +129,7 @@ def main_loop(plt):
         plt.ylabel('MiB/sec')
 
     plt.title(test_type)
+    plt.xlabel('Test run')
 
     plt.savefig("{}{}_from_test_runs_{}-{}.jpg".format(path_to_data, test_type, first_test_run_no, last_test_run_no))
 
@@ -135,7 +137,6 @@ def main_loop(plt):
     # plt.show()
 
 
-plt.xlabel('Test run')
 plt.xticks(np.arange(first_test_run_no, last_test_run_no + 1, step=1))
 
 for t in range(0, 6):
