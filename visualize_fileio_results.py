@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022-2024 Technology Innovation Institute (TII)
+# SPDX-License-Identifier: Apache-2.0
+
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -9,7 +12,7 @@ path_to_data = "./../sysbench_result_data/lenovo-x1/"
 
 # Limit the range of plotted test runs
 first_test_run_no = 0   # test runs with lower number won't be shown
-last_test_run_no = 13   # test runs with higher number won't be shown
+last_test_run_no = 18   # test runs with higher number won't be shown
 
 
 def list_vm_files(file_list, vm_name):

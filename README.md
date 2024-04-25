@@ -1,3 +1,8 @@
+<!--
+    Copyright 2022-2024 TII (SSRC) and the Ghaf contributors
+    SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 To run sysbench tests automatically for ghaf in Lenovo X1 Carbon:
 - Clone the repository (to some other machine than the target)
 - In NixOS run nix develop (to install the dependencies defined in flake.nix)

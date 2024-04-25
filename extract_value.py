@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022-2024 Technology Innovation Institute (TII)
+# SPDX-License-Identifier: Apache-2.0
+
 def extract(file, detect_str, str1, str2):
 
     #file_name = r'578_cpu_report'

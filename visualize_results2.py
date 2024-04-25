@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022-2024 Technology Innovation Institute (TII)
+# SPDX-License-Identifier: Apache-2.0
+
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -8,8 +11,8 @@ from extract_value import *
 path_to_data = "./../sysbench_result_data/lenovo-x1/"
 
 # Limit the range of plotted test runs
-first_test_run_no = 8   # test runs with lower number won't be shown
-last_test_run_no = 14   # test runs with higher number won't be shown
+first_test_run_no = 12   # test runs with lower number won't be shown
+last_test_run_no = 20   # test runs with higher number won't be shown
 
 
 test_type = None

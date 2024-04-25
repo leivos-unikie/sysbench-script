@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022-2024 Technology Innovation Institute (TII)
+# SPDX-License-Identifier: Apache-2.0
+
 import time
 
 
@@ -125,7 +128,8 @@ def test_appvms_from_netvm(chan, file, test_run):
     appvm_from_netvm(chan, file, 'gala-vm', 'gala-vm', test_run, 2)
     appvm_from_netvm(chan, file, 'zathura-vm', 'zathura-vm', test_run, 1)
     appvm_from_netvm(chan, file, 'gui-vm', 'gui-vm', test_run, 2)
-    # appvm_from_netvm(chan, file, 'ids-vm', 'ids-vm', test_run, 1)
+    # appvm_from_netvm(chan, file, 'element-vm', 'element-vm', test_run, 1)
+    appvm_from_netvm(chan, file, 'ids-vm', 'ids-vm', test_run, 1)
     # appvm_from_netvm(chan, file, 'audio-vm', 'audio-vm', test_run, 1)
     return
 

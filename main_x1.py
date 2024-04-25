@@ -1,14 +1,17 @@
+# SPDX-FileCopyrightText: 2022-2024 Technology Innovation Institute (TII)
+# SPDX-License-Identifier: Apache-2.0
+
 import paramiko
 import os
 import time
 from tools import *
 
-target_ip = '10.0.0.10'
+target_ip = '192.168.100.35'
 output_file = 'ssh.log'
-test_run = 13
+test_run = 20
 
 # This will be saved to root of the main result directory
-long_build_description = """Test PR#406 PowerControl over ssh
+long_build_description = """Re-testing PR#422 Add IDS-VM. 
 """
 
 # This could optionally be used as an arbitrary name of the ghaf build under test.
@@ -64,7 +67,7 @@ def main():
             log_netvm(chan, file)
 
             # Run test in ids-vm 192.168.100.3
-            # appvm_from_netvm(chan, file, '192.168.100.3', 'ids-vm', test_run, 1)
+            # appvm_from_netvm(chan, file, '192.168.100.4', 'ids-vm', test_run, 1)
 
             # Run test in net-vm
             run_test(chan, file, 'net-vm', test_run, 1)

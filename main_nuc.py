@@ -1,14 +1,17 @@
+# SPDX-FileCopyrightText: 2022-2024 Technology Innovation Institute (TII)
+# SPDX-License-Identifier: Apache-2.0
+
 import paramiko
 import os
 import time
 from tools import *
 
-target_ip = '172.18.8.149'
+target_ip = '192.168.100.35'
 output_file = 'ssh.log'
-test_run = 1
+test_run = 2
 
 # This will be saved to root of the main result directory
-long_build_description = "Regression testing for themisto buid 134 on 2024-02-01."
+long_build_description = "Regression testing for themisto buid 151 on 2024-02-15."
 
 # This could optionally be used as an arbitrary name of the ghaf build under test.
 # Build labels could show on the x-axis of the plot produced by visualize_results.py
@@ -123,5 +126,4 @@ def main():
 main()
 
 # Pull the result files out from the target machine.
-os.system('ssh-keygen -R {}'.format(target_ip))
-os.system("sshpass -p 'ghaf' scp -r ghaf@{}:/home/ghaf/Test_run_{} ./../sysbench_result_data/nuc/\n".format(target_ip, test_run))
+os.system("sshpass -p 'ghaf' scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ghaf@{}:/home/ghaf/Test_run_{} ./../sysbench_result_data/nuc/\n".format(target_ip, test_run))

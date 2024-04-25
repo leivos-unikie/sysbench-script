@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022-2024 Technology Innovation Institute (TII)
+# SPDX-License-Identifier: Apache-2.0
+
 # Test set to be run with sysbench
 
 # These variables need to be given on the command line.
@@ -147,6 +150,8 @@ then
 	echo -e "\nTest finished.\n"
 	exit 1
 fi
+
+exit 1
 
 sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqrd prepare
 sysbench fileio --file-total-size=${FILE_TOTAL_SIZE}G --threads=${THREADS} --file-test-mode=seqrd --time=30 run | tee ./$RESULT_DIR/fileio_rd_report
